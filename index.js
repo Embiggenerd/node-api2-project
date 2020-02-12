@@ -45,6 +45,37 @@ server.post('/api/posts', async (req, res, next) => {
     }
 })
 
+server.post('/api/posts/:id/comments', async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const { text } = req.body
+
+        if (!text) {
+            return res.status(400).json({ errorMessage: 'Please provide text for the comment.' })
+        }
+
+        const post = await findById(id)
+
+        if (post.length === 0) {
+            const noSuchPost = new Error('The post with the specified ID does not exist.')
+            noSuchPost.httpStatusCode = 404
+            throw noSuchPost
+        }
+
+        const newComment = await insertComment({...req.body, post_id:id})
+
+        res.status(201).json(newComment)
+
+    } catch (e) {
+        if (e.httpStatusCode !== 500) {
+            return next(e)
+        }
+        next(new Error('There was an error while saving the comment to the database'))
+    }
+})
+
+
+
 server.use((err, req, res, next) => {
     res.status(err.httpStatusCode || 500).json({
         errorMessage: err.message
