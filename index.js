@@ -117,6 +117,27 @@ server.get('/api/posts/:id/comments', async (req, res, next) => {
     }
 })
 
+server.delete('/api/posts/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params
+
+        const postToDelete = await findById(id)
+
+        if (!id) {
+            res.stats(404).json({ message: "The post with the specified ID does not exist." })
+        }
+
+        const removed = await remove(id)
+
+        return res.json(postToDelete)
+
+    } catch (e) {
+        return res.stats(500).json({ error: "The post could not be removed" })
+    }
+})
+
+
+
 server.use((err, req, res, next) => {
     res.status(err.httpStatusCode || 500).json({
         errorMessage: err.message
