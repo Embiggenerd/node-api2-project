@@ -136,6 +136,32 @@ server.delete('/api/posts/:id', async (req, res, next) => {
     }
 })
 
+server.put('/api/posts/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params
+
+        const foundPost = await findById(id)
+        console.log('foundPost', foundPost)
+
+        if (foundPost.length === 0) {
+            return res.status(404).json({ message: "The post with the specified ID does not exist." })
+        }
+
+        const { title, contents } = req.body
+        console.log('req.body', req.body)
+        if (!title || !contents) {
+            return res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+        }
+
+        const updated = await update(id, req.body)
+        console.log('update', updated)
+        const updatedPost = await findById(id)
+        console.log('updatedPost', updatedPost)
+        return res.json(updatedPost)
+    } catch (e) {
+        next(e)
+    }
+})
 
 
 server.use((err, req, res, next) => {
