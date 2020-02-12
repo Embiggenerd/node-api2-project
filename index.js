@@ -62,7 +62,7 @@ server.post('/api/posts/:id/comments', async (req, res, next) => {
             throw noSuchPost
         }
 
-        const newComment = await insertComment({...req.body, post_id:id})
+        const newComment = await insertComment({ ...req.body, post_id: id })
 
         res.status(201).json(newComment)
 
@@ -71,6 +71,16 @@ server.post('/api/posts/:id/comments', async (req, res, next) => {
             return next(e)
         }
         next(new Error('There was an error while saving the comment to the database'))
+    }
+})
+
+server.get('/api/posts', async (req, res, next) => {
+    try {
+        const posts = await find()
+
+        res.json(posts)
+    } catch (e) {
+        res.status(500).json({ error: "The posts information could not be retrieved." })
     }
 })
 
