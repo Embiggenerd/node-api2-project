@@ -89,7 +89,7 @@ server.get('/api/posts/:id', async (req, res, next) => {
         const { id } = req.params
 
         const post = await findById(id)
-        
+
         if (post.length === 0) {
             return res.status(404).json({ message: "The post with the specified ID does not exist." })
         }
@@ -97,6 +97,23 @@ server.get('/api/posts/:id', async (req, res, next) => {
         res.json(post)
     } catch (e) {
         res.statsu(500).json({ error: "The post information could not be retrieved." })
+    }
+})
+
+server.get('/api/posts/:id/comments', async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const post = await findById(id)
+
+        if (post.length === 0) {
+            return res.status(400).json({ message: "The post with the specified ID does not exist." })
+        }
+
+        const comments = await findCommentById(id)
+
+        res.json(comments)
+    } catch (e) {
+        res.stats(500).json({ error: "The comments information could not be retrieved." })
     }
 })
 
