@@ -84,7 +84,21 @@ server.get('/api/posts', async (req, res, next) => {
     }
 })
 
+server.get('/api/posts/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params
 
+        const post = await findById(id)
+        
+        if (post.length === 0) {
+            return res.status(404).json({ message: "The post with the specified ID does not exist." })
+        }
+
+        res.json(post)
+    } catch (e) {
+        res.statsu(500).json({ error: "The post information could not be retrieved." })
+    }
+})
 
 server.use((err, req, res, next) => {
     res.status(err.httpStatusCode || 500).json({
